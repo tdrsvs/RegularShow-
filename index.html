@@ -2561,7 +2561,7 @@ function toggleText() {
     <img src="https://s01.babup.com/uploads/16-9.jpeg" alt="finance" loading="lazy">
   </figure>
 
-  <h1 class="project-title"> عندما يتسبب موردخاي وريجبي في ثقب بجدار غرفة نومهما، يدركان أنهما بحاجة إلى زيادة في الراتب لإصلاحه. أثناء بحثهما عن طريقة لتحقيق ذلك، يعثران على بيانو سحري يمنحهما القدرة على تحقيق أي شيء يتمنّيانه من خلال العزف عليه. في البداية، يستمتعان باستخدامه لتحقيق رغباتهما البسيطة، لكن سرعان ما يكتشفان أن القوة السحرية ليست لعبة، وأن استخدامها بلا تفكير قد يؤدي إلى عواقب غير متوقعة. هل سيتمكنان من السيطرة على الموقف قبل أن يخرج عن السيطرة.. اكمل مشاهدة احداث الحلقة الاولى من الموسم الاول </h1>
+  <h1 class="project-title"> عندما يتسبب موردخاي وريجبي في ثقب بجدار غرفة نومهما، يدركان أنهما بحاجة إلى زيادة في الراتب لإصلاحه. لكن هل سوف يتمكنان من السيطرة على الموقف قبل أن يخرج عن السيطرة.. اكمل مشاهدة احداث الحلقة الاولى من الموسم الاول </h1>
 
 
 
@@ -2679,7 +2679,147 @@ function toggleText() {
   </script>
 </li>
 
+<li class="project-item " data-filter-item data-category="الموسم الاول" onclick="toggleButtons(event, this)">
+  <figure class="project-img">
+    <!-- شريط ثابت في أعلى يسار الصورة يحتوي على عنوان الحلقة -->
+    <div class="episode-title">
+      <ion-icon name="document-text-outline"></ion-icon> فقط رتبوا الكراسي </div>
 
+    <!-- أيقونة العين الأصلية -->
+    <div class="project-item-icon-box">
+      <ion-icon name="eye-outline"></ion-icon>
+    </div>
+
+    <!-- الأزرار المخفية -->
+    <div class="project-buttons" style="display: none;">
+      <a href="https://videa.hu/videok/film-animacio/rs1e2m-fans-home-9fCy6v5nizN5iXY!q" class="project-button translated" target="_blank" onclick="event.stopPropagation();">
+        <ion-icon name="globe-outline"></ion-icon> مترجمة
+      </a>
+     <a href="https://videa.hu/videok/film-animacio/rs1e2d-fans-home-TdC0M$QaYQTUMuYUU" class="project-button dubbed" target="_blank" onclick="event.stopPropagation();">
+        <ion-icon name="mic-outline"></ion-icon> مدبلجة
+      </a>
+    </div>
+
+    <img src="https://s01.babup.com/uploads/MV5BMTg1OTc4ODMzOV5BMl5BanBnXkFtZTcwODc5Nzc4Nw-V1-.jpg" alt="finance" loading="lazy">
+  </figure>
+
+  <h1 class="project-title"> يحاول موردخاي وريجبي إثبات لبنسون أنهما ليسا متكاسلين من خلال إكمال المهمة الموكلة إليهما، وهي إعداد الكراسي لحفل عيد ميلاد أحد الأطفال لكن هل سوف يجري كل شيء بشكل طبيعي وعادي؟ اكمل مشاهدة احداث الحلقة الثانية الموسم الاول   </h1>
+
+
+
+  <style>
+    .project-item {
+      position: relative;
+      cursor: pointer;
+    }
+
+    /* عنوان الحلقة في أعلى يسار الصورة مع خلفية خضراء داكنة */
+    .episode-title {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #2d6a4f; /* خلفية خضراء داكنة */
+      padding: 8px 15px; /* تقليص المسافة داخل الزر */
+      border-radius: 25px;
+      color: white; /* النص باللون الأبيض */
+      font-size: 14px; /* تصغير حجم النص */
+      font-weight: bold;
+      text-align: center;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      gap: 6px; /* تقليص المسافة بين الأيقونة والنص */
+    }
+
+    /* شريط الأيقونة في المنتصف */
+    .project-item-icon-box {
+      cursor: pointer;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.6);
+      padding: 12px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: 0.3s;
+    }
+
+    .project-item-icon-box:hover {
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    /* الأزرار المخفية */
+    .project-buttons {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      gap: 15px;
+      z-index: 10;
+    }
+
+    .project-button {
+      color: white;
+      padding: 10px 18px; /* تقليص المسافة داخل الأزرار */
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.3s;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .project-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .translated {
+      background: linear-gradient(to right, #ff4d4d, #ff7373);  
+    }
+
+    .dubbed {
+      background: linear-gradient(to right, #1f3b6d, #27496d); 
+    }
+
+    .project-button ion-icon {
+      font-size: 18px;
+    }
+
+  </style>
+
+  <script>
+    function toggleButtons(event, item) {
+      let buttons = item.querySelector('.project-buttons');
+      let iconBox = item.querySelector('.project-item-icon-box');
+
+      if (buttons.style.display === "none" || buttons.style.display === "") {
+        buttons.style.display = "flex";
+        iconBox.style.display = "none";
+      } else {
+        buttons.style.display = "none";
+        iconBox.style.display = "flex";
+      }
+    }
+
+    document.addEventListener("click", function(event) {
+      let items = document.querySelectorAll('.project-item');
+      items.forEach(item => {
+        if (!item.contains(event.target) && !event.target.classList.contains('project-button')) {
+          item.querySelector('.project-buttons').style.display = "none";
+          item.querySelector('.project-item-icon-box').style.display = "flex";
+        }
+      });
+    });
+  </script>
+</li>
 
 
           </ul>
