@@ -2168,6 +2168,22 @@ textarea.form-input::-webkit-resizer { display: none; }
 
             </li>
 
+      <li class="service-item">
+
+              <div class="service-icon-box">
+             
+              </div>
+
+              <div class="service-content-box">
+                <h4 class="h4 service-item-title">التعليقات</h4>
+
+                <p class="service-item-text">
+                  التعليقات لهذا الكرتون متاحة لكن التعليقات متاحة بشأن الكرتون فقط وأي تعليق يتعلق بمواضيع أخرى مثل السياسة والدين أو السبام سيؤدي إلى حظر المستخدم من الموقع بشكل نهائي
+                </p>
+              </div>
+
+            </li>
+
           </ul>
 
         </section>
@@ -2199,6 +2215,171 @@ textarea.form-input::-webkit-resizer { display: none; }
             </div>
           </section>
         </div>
+        
+        
+        
+        <section class="comments-section" style="margin-top: 40px;">
+  <h3 class="h3 service-title">التعليقات </h3>
+  <div id="comment-user-setup" style="margin-bottom: 10px;">
+    <input id="usernameInput" type="text" placeholder="حدد اسم أو لقب لك يضهر بجانب تعليقك ( غير قابل للتغيير مجددا )" class="form-input">
+    <button onclick="setUsername()" class="form-btn">تأكيد الاسم</button>
+  </div>
+
+    <div id="gender-selection" style="display: none; margin-bottom: 10px; background-color: rgba(0, 0, 0, 0.5); color: white; padding: 10px; border-radius: 8px;">
+    <label for="gender" style="font-size: 16px; color: white;">اختار الجنس:</label>
+    <select id="gender" class="form-input" style="background-color: transparent; color: white; border: 1px solid white;">
+      <option value="ذكر">ذكر</option>
+      <option value="أنثى">أنثى</option>
+    </select>
+    <button onclick="setGender()" class="form-btn" style="background-color: rgba(255, 255, 255, 0.2); color: white; border: 1px solid white;">تأكيد الجنس</button>
+  </div>
+
+  <div id="comment-form" style="display: none; margin-bottom: 15px;">
+    <textarea id="commentInput" class="form-input" placeholder="... اكتب تعليقك هنا"></textarea>
+    <button onclick="submitComment()" class="form-btn">نشر التعليق</button>
+  </div>
+
+  <ul id="commentsList" style="margin-top: 20px;"></ul>
+</section>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+  // إعداد Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyC0TX35KdrVWzAnFNfpcUwA0zS3OiA0aCQ",
+  authDomain: "regular-show-79b74.firebaseapp.com",
+  projectId: "regular-show-79b74",
+  storageBucket: "regular-show-79b74.appspot.com",
+  messagingSenderId: "821342810030",
+  appId: "1:821342810030:web:f8dfd84b39690a2f20623f",
+  measurementId: "G-25YQ66SP62"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const episodeKey = "inspector-gadget"; // لكل مسلسل مفتاح خاص
+
+// عند تحميل الصفحة
+window.onload = function () {
+  const username = localStorage.getItem("username");
+  const gender = localStorage.getItem("gender");
+
+  // التحقق إذا كان المستخدم قد أدخل اسمه وجنسه
+  if (username && gender) {
+    document.getElementById("comment-user-setup").style.display = "none";
+    document.getElementById("gender-selection").style.display = "none";
+    document.getElementById("comment-form").style.display = "block";
+  } else if (username) {
+    document.getElementById("gender-selection").style.display = "block";
+  }
+  
+  renderComments(); // تحميل التعليقات بعد التحقق من حالة المستخدم
+};
+
+// تعيين اسم المستخدم
+function setUsername() {
+  const name = document.getElementById("usernameInput").value.trim();
+  if (name) {
+    localStorage.setItem("username", name);  // تخزين اسم المستخدم في localStorage
+    document.getElementById("comment-user-setup").style.display = "none";
+    document.getElementById("gender-selection").style.display = "block";
+  }
+}
+
+// تعيين الجنس
+function setGender() {
+  const gender = document.getElementById("gender").value;
+  localStorage.setItem("gender", gender);  // تخزين الجنس في localStorage
+  document.getElementById("gender-selection").style.display = "none";
+  document.getElementById("comment-form").style.display = "block";
+}
+
+// إرسال تعليق
+function submitComment() {
+  const comment = document.getElementById("commentInput").value.trim();
+  const user = localStorage.getItem("username");
+  const gender = localStorage.getItem("gender");
+
+  if (comment && user && gender) {
+    // تخزين التعليق في Firestore باستخدام المفتاح الخاص بالحلقة
+    db.collection("comments").doc(episodeKey).collection("items").add({
+      user,
+      comment,
+      gender,
+      timestamp: Date.now()  // إضافة الطابع الزمني للتعليق
+    }).then(() => {
+      document.getElementById("commentInput").value = "";  // مسح النص بعد الإرسال
+    });
+  }
+}
+
+// حذف تعليق
+function deleteComment(commentId) {
+  const user = localStorage.getItem("username");
+  const docRef = db.collection("comments").doc(episodeKey).collection("items").doc(commentId);
+  
+  docRef.get().then(doc => {
+    if (doc.exists && doc.data().user === user) {
+      docRef.delete();  // حذف التعليق إذا كان المستخدم هو الذي أضافه
+    }
+  });
+}
+
+// تعديل تعليق
+function editComment(commentId, currentText) {
+  const user = localStorage.getItem("username");
+  const newText = prompt("تعديل التعليق:", currentText);
+  if (newText) {
+    const docRef = db.collection("comments").doc(episodeKey).collection("items").doc(commentId);
+    docRef.get().then(doc => {
+      if (doc.exists && doc.data().user === user) {
+        docRef.update({ comment: newText.trim() });  // تحديث التعليق
+      }
+    });
+  }
+}
+
+// عرض التعليقات
+function renderComments() {
+  const user = localStorage.getItem("username");
+  const gender = localStorage.getItem("gender");
+  const list = document.getElementById("commentsList");
+
+  db.collection("comments").doc(episodeKey).collection("items")
+    .orderBy("timestamp", "asc")  // ترتيب التعليقات حسب الوقت
+    .onSnapshot(snapshot => {
+      list.innerHTML = "<h3></h3>"; // إضافة عنوان للتعليقات
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const li = document.createElement("li");
+        li.className = "content-card";
+        li.style.marginBottom = "15px";
+        li.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center;">
+              <img src="${data.gender === 'ذكر' ? 'https://s01.babup.com/uploads/Picsart-25-04-09-02-55-10-324.png' : 'https://s01.babup.com/uploads/Picsart-25-04-09-02-54-28-421.png'}" 
+                   alt="${data.user}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+              <h4 style="font-size: 16px; color: var(--orange-yellow-crayola); margin: 0;">${data.user}</h4>
+            </div>
+            ${data.user === user ? `
+              <div style="display: flex; gap: 8px;">
+                <button onclick="editComment('${doc.id}', \`${data.comment.replace(/`/g, "\\`")}\`)" class="form-btn" style="padding: 4px 8px; font-size: 13px;">تعديل</button>
+                <button onclick="deleteComment('${doc.id}')" class="form-btn" style="padding: 4px 8px; font-size: 13px;">حذف</button>
+              </div>
+            ` : ""}
+          </div>
+          <p style="color: var(--white-2); font-size: 15px;">${data.comment}</p>
+        `;
+        list.appendChild(li);
+      });
+    });
+}
+</script>
+        
+        
       </article>
 
 
@@ -2550,8 +2731,8 @@ function toggleText() {
 
     <!-- الأزرار المخفية -->
     <div class="project-buttons" style="display: none;">
-      <a href="https://videa.hu/videok/film-animacio/rs1e1m-fans-home-KF_n59ceRAx6k60Cj" class="project-button translated" target="_blank" onclick="event.stopPropagation();">
-        <ion-icon name="globe-outline"></ion-icon> مترجمة
+      <a href="#" class="project-button translated" target="_blank" onclick="event.stopPropagation();">
+        <ion-icon name="cart-outline"></ion-icon> تحميل 
       </a>
      <a href="https://videa.hu/videok/film-animacio/rs1e1d-fans-home-9hg41T$zGuKzAqS1i" class="project-button dubbed" target="_blank" onclick="event.stopPropagation();">
         <ion-icon name="mic-outline"></ion-icon> مدبلجة
@@ -2692,8 +2873,8 @@ function toggleText() {
 
     <!-- الأزرار المخفية -->
     <div class="project-buttons" style="display: none;">
-      <a href="https://videa.hu/videok/film-animacio/rs1e2m-fans-home-9fCy6v5nizN5iXY!q" class="project-button translated" target="_blank" onclick="event.stopPropagation();">
-        <ion-icon name="globe-outline"></ion-icon> مترجمة
+      <a href="#" class="project-button translated" target="_blank" onclick="event.stopPropagation();">
+        <ion-icon name="cart-outline"></ion-icon> تحميل
       </a>
      <a href="https://videa.hu/videok/film-animacio/rs1e2d-fans-home-TdC0M$QaYQTUMuYUU" class="project-button dubbed" target="_blank" onclick="event.stopPropagation();">
         <ion-icon name="mic-outline"></ion-icon> مدبلجة
