@@ -1,4 +1,18 @@
 <!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      window.addEventListener("message", function(event) {
+        if (event.data === "getUsername") {
+          const username = localStorage.getItem("username");
+          event.source.postMessage({ username: username }, event.origin);
+        }
+      });
+    </script>
+    <!-- باقي الأكواد -->
+  </head>
+  <body>
+<!DOCTYPE html>
 <html lang="ar">
 
 <head>
@@ -3197,4 +3211,6 @@ for (let i = 0; i < navigationLinks.length; i++) {
 
 </body>
 
+</html>
+  </body>
 </html>
