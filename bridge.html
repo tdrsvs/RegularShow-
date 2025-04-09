@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bridge Page</title>
+    <script>
+        // الاستماع للرسائل المرسلة من iframe
+        window.addEventListener("message", function(event) {
+            // التأكد من أن الرسالة تأتي من النطاق الصحيح
+            if (event.origin !== "https://rs.fhtoon.com") return;
+
+            // إذا كانت الرسالة "getUsername"، نقوم بإرجاع اسم المستخدم المخزن
+            if (event.data === "getUsername") {
+                const username = localStorage.getItem("username"); // استرجاع اسم المستخدم
+                event.source.postMessage({ username: username }, event.origin); // إرسال الاسم للمصدر
+            }
+        });
+    </script>
+</head>
+<body>
+    <!-- محتوى الصفحة فارغ لأننا نستخدم هذه الصفحة فقط كـ "جسر" للتواصل بين الصفحات -->
+</body>
+</html>
