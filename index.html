@@ -2232,37 +2232,85 @@ textarea.form-input::-webkit-resizer { display: none; }
         
         
         
-        <section class="comments-section" style="margin-top: 40px;">
-  <h3 class="h3 service-title">التعليقات </h3>
-  <div id="comment-user-setup" style="margin-bottom: 10px;">
-    <input id="usernameInput" type="text" placeholder="حدد اسم يضهر بجانب تعليقك ( غير قابل للتغيير مجددا )" class="form-input">
-    <button onclick="setUsername()" class="form-btn">تأكيد الاسم</button>
-  </div>
+         <section class="comments-section" style="margin-top: 40px;">
+  <h3 class="h3 service-title">التعليقات</h3>
+  <div style="margin-bottom: 15px;">
+    <textarea id="anonComment_input" class="form-input" placeholder="... اكتب تعليقك هنا"></textarea>
+    <div style="margin: 8px 0;" id="anonComment_country_container">
+      <label style="color:white;">من أي دولة أنت؟</label>
+      <select id="anonComment_country" class="form-input">
+       <option value="السعودية">السعودية</option>
+<option value="مصر">مصر</option>
+<option value="الجزائر">الجزائر</option>
+<option value="العراق">العراق</option>
+<option value="سوريا">سوريا</option>
+<option value="المغرب">المغرب</option>
+<option value="الأردن">الأردن</option>
+<option value="تونس">تونس</option>
+<option value="الإمارات">الإمارات</option>
+<option value="اليمن">اليمن</option>
+<option value="لبنان">لبنان</option>
+<option value="فلسطين">فلسطين</option>
+<option value="الكويت">الكويت</option>
+<option value="عمان">عمان</option>
+<option value="البحرين">البحرين</option>
+<option value="قطر">قطر</option>
+<option value="موريتانيا">موريتانيا</option>
+<option value="السودان">السودان</option>
+<option value="الصومال">الصومال</option>
+<option value="جيبوتي">جيبوتي</option>
+<option value="جزر القمر">جزر القمر</option>
+<option value="ليبيا">ليبيا</option>
 
-    <div id="gender-selection" style="display: none; margin-bottom: 10px; background-color: rgba(0, 0, 0, 0.5); color: white; padding: 10px; border-radius: 8px;">
-    <label for="gender" style="font-size: 16px; color: white;">اختار الجنس:</label>
-    <select id="gender" class="form-input" style="background-color: transparent; color: white; border: 1px solid white;">
-      <option value="ذكر">ذكر</option>
-      <option value="أنثى">أنثى</option>
-    </select>
-    <button onclick="setGender()" class="form-btn" style="background-color: rgba(255, 255, 255, 0.2); color: white; border: 1px solid white;">تأكيد الجنس</button>
+      </select>
+    </div>
+    <button onclick="anonComment_submit()" class="form-btn">نشر التعليق</button>
+    <div style="margin-top: 10px; display: flex; align-items: center;">
+      <input type="checkbox" id="anonComment_spoiler" style="margin-left: 10px;">
+      <label style="color:white; margin-left: 10px; white-space: nowrap;">هل التعليق يحتوي على حرق لإحداث الكرتون؟   </label>
+    </div>
   </div>
-
-  <div id="comment-form" style="display: none; margin-bottom: 15px;">
-    <textarea id="commentInput" class="form-input" placeholder="... اكتب تعليقك هنا"></textarea>
-    <button onclick="submitComment()" class="form-btn">نشر التعليق</button>
-  </div>
-
-  <ul id="commentsList" style="margin-top: 20px;"></ul>
+  <ul id="anonComment_list" style="margin-top: 20px;"></ul>
 </section>
 
-<!-- Firebase SDK -->
+<style>
+  .anon-icon-btn {
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 8px;
+  }
+  .anon-icon-btn:hover {
+    color: orange;
+  }
+  .spoiler-warning {
+    background: #2c2c2c;
+    padding: 10px;
+    border-radius: 8px;
+    color: #ff6f61;
+    cursor: pointer;
+  }
+  .comment-separator {
+    border-top: 1px solid #ccc;
+    margin: 15px 0;
+  }
+  .anon-comment-user {
+    font-size: 18px; 
+    color: #ff6f61;  
+  }
+  #anonComment_country {
+  background-color: transparent;
+  color: white;
+  border: 1px solid #ccc; /* أو أي لون حد تود استخدامه */
+}
+</style>
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
 <script>
-  // إعداد Firebase
-const firebaseConfig = {
+  const firebaseConfig = {
   apiKey: "AIzaSyC0TX35KdrVWzAnFNfpcUwA0zS3OiA0aCQ",
   authDomain: "regular-show-79b74.firebaseapp.com",
   projectId: "regular-show-79b74",
@@ -2272,125 +2320,151 @@ const firebaseConfig = {
   measurementId: "G-25YQ66SP62"
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const episodeKey = "inspector-gadget"; // لكل مسلسل مفتاح خاص
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const episodeKey = "inspector-gadget";
 
-// عند تحميل الصفحة
-window.onload = function () {
-  const username = localStorage.getItem("username");
-  const gender = localStorage.getItem("gender");
-
-  // التحقق إذا كان المستخدم قد أدخل اسمه وجنسه
-  if (username && gender) {
-    document.getElementById("comment-user-setup").style.display = "none";
-    document.getElementById("gender-selection").style.display = "none";
-    document.getElementById("comment-form").style.display = "block";
-  } else if (username) {
-    document.getElementById("gender-selection").style.display = "block";
-  }
-  
-  renderComments(); // تحميل التعليقات بعد التحقق من حالة المستخدم
-};
-
-// تعيين اسم المستخدم
-function setUsername() {
-  const name = document.getElementById("usernameInput").value.trim();
-  if (name) {
-    localStorage.setItem("username", name);  // تخزين اسم المستخدم في localStorage
-    document.getElementById("comment-user-setup").style.display = "none";
-    document.getElementById("gender-selection").style.display = "block";
-  }
-}
-
-// تعيين الجنس
-function setGender() {
-  const gender = document.getElementById("gender").value;
-  localStorage.setItem("gender", gender);  // تخزين الجنس في localStorage
-  document.getElementById("gender-selection").style.display = "none";
-  document.getElementById("comment-form").style.display = "block";
-}
-
-// إرسال تعليق
-function submitComment() {
-  const comment = document.getElementById("commentInput").value.trim();
-  const user = localStorage.getItem("username");
-  const gender = localStorage.getItem("gender");
-
-  if (comment && user && gender) {
-    // تخزين التعليق في Firestore باستخدام المفتاح الخاص بالحلقة
-    db.collection("comments").doc(episodeKey).collection("items").add({
-      user,
-      comment,
-      gender,
-      timestamp: Date.now()  // إضافة الطابع الزمني للتعليق
-    }).then(() => {
-      document.getElementById("commentInput").value = "";  // مسح النص بعد الإرسال
-    });
-  }
-}
-
-// حذف تعليق
-function deleteComment(commentId) {
-  const user = localStorage.getItem("username");
-  const docRef = db.collection("comments").doc(episodeKey).collection("items").doc(commentId);
-  
-  docRef.get().then(doc => {
-    if (doc.exists && doc.data().user === user) {
-      docRef.delete();  // حذف التعليق إذا كان المستخدم هو الذي أضافه
+  // الحصول على UID للتعليقات المجهولة
+  function anonComment_uid() {
+    let uid = localStorage.getItem("anon_comment_uid");
+    if (!uid) {
+      uid = Date.now() + Math.random().toString(36).substring(2);
+      localStorage.setItem("anon_comment_uid", uid);
     }
-  });
-}
+    return uid;
+  }
 
-// تعديل تعليق
-function editComment(commentId, currentText) {
-  const user = localStorage.getItem("username");
-  const newText = prompt("تعديل التعليق:", currentText);
-  if (newText) {
-    const docRef = db.collection("comments").doc(episodeKey).collection("items").doc(commentId);
-    docRef.get().then(doc => {
-      if (doc.exists && doc.data().user === user) {
-        docRef.update({ comment: newText.trim() });  // تحديث التعليق
-      }
+  // تنسيق الإعجابات (مثل: 1k أو 1m)
+  function anonComment_formatLikes(num) {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + "m";
+    if (num >= 1000) return (num / 1000).toFixed(1) + "k";
+    return num;
+  }
+
+  // نشر التعليق
+  function anonComment_submit() {
+    const txt = document.getElementById("anonComment_input").value.trim();
+    const country = document.getElementById("anonComment_country").value;
+    const spoiler = document.getElementById("anonComment_spoiler").checked;
+
+    if (!txt) return;
+
+    // تخزين البلد في التخزين المحلي وإخفاء القائمة بعد أول نشر
+    localStorage.setItem("anon_comment_country", country);
+    document.getElementById("anonComment_country_container").style.display = "none";
+
+    db.collection("comments").doc(episodeKey).collection("items").add({
+      user: "مستخدم مجهول",
+      country,
+      comment: txt,
+      timestamp: Date.now(),
+      likes: 0,
+      likedBy: [],
+      owner: anonComment_uid(),
+      spoiler
+    }).then(() => {
+      document.getElementById("anonComment_input").value = "";
+      document.getElementById("anonComment_spoiler").checked = false;
     });
   }
-}
 
-// عرض التعليقات
-function renderComments() {
-  const user = localStorage.getItem("username");
-  const gender = localStorage.getItem("gender");
-  const list = document.getElementById("commentsList");
+  // حساب الوقت منذ التعليق
+  function anonComment_timeAgo(ts) {
+    const diff = (Date.now() - ts) / 1000;
+    if (diff < 60) return `منذ ${Math.floor(diff)} ثانية`;
+    if (diff < 3600) return `منذ ${Math.floor(diff/60)} دقيقة`;
+    if (diff < 86400) return `منذ ${Math.floor(diff/3600)} ساعة`;
+    if (diff < 604800) return `منذ ${Math.floor(diff/86400)} يوم`;
+    if (diff < 2592000) return `منذ ${Math.floor(diff/604800)} أسبوع`;
+    return `منذ ${Math.floor(diff/2592000)} شهر`;
+  }
 
-  db.collection("comments").doc(episodeKey).collection("items")
-    .orderBy("timestamp", "asc")  // ترتيب التعليقات حسب الوقت
-    .onSnapshot(snapshot => {
-      list.innerHTML = "<h3></h3>"; // إضافة عنوان للتعليقات
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const li = document.createElement("li");
-        li.className = "content-card";
-        li.style.marginBottom = "15px";
-        li.innerHTML = `
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <div style="display: flex; align-items: center;">
-              <img src="${data.gender === 'ذكر' ? 'https://s01.babup.com/uploads/Picsart-25-04-09-02-55-10-324.png' : 'https://s01.babup.com/uploads/Picsart-25-04-09-02-54-28-421.png'}" 
-                   alt="${data.user}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
-              <h4 style="font-size: 16px; color: var(--orange-yellow-crayola); margin: 0;">${data.user}</h4>
-            </div>
-            ${data.user === user ? `
-              <div style="display: flex; gap: 8px;">
-                <button onclick="editComment('${doc.id}', \`${data.comment.replace(/`/g, "\\`")}\`)" class="form-btn" style="padding: 4px 8px; font-size: 13px;">تعديل</button>
-                <button onclick="deleteComment('${doc.id}')" class="form-btn" style="padding: 4px 8px; font-size: 13px;">حذف</button>
-              </div>
-            ` : ""}
-          </div>
-          <p style="color: var(--white-2); font-size: 15px;">${data.comment}</p>
-        `;
-        list.appendChild(li);
+  // إضافة الإعجاب
+  function anonComment_like(id) {
+    const uid = anonComment_uid();
+    const ref = db.collection("comments").doc(episodeKey).collection("items").doc(id);
+    ref.get().then(doc => {
+      const d = doc.data();
+      const liked = d.likedBy.includes(uid);
+      ref.update({
+        likes: d.likes + (liked ? -1 : 1),
+        likedBy: liked ? d.likedBy.filter(u => u !== uid) : [...d.likedBy, uid]
       });
     });
-}
+  }
+
+  // حذف التعليق
+  function anonComment_delete(id) {
+    if (confirm("هل أنت متأكد من حذف التعليق؟")) {
+      db.collection("comments").doc(episodeKey).collection("items").doc(id).delete();
+    }
+  }
+
+  // تعديل التعليق
+  function anonComment_edit(id, oldComment) {
+    const newText = prompt("تعديل التعليق:", oldComment);
+    if (newText && newText.trim() !== "") {
+      db.collection("comments").doc(episodeKey).collection("items").doc(id).update({
+        comment: newText.trim()
+      });
+    }
+  }
+
+  // عرض التعليقات
+  function anonComment_render() {
+    const ul = document.getElementById("anonComment_list");
+    const uid = anonComment_uid();
+
+    db.collection("comments").doc(episodeKey).collection("items")
+      .orderBy("likes", "desc")
+      .onSnapshot(snap => {
+        ul.innerHTML = "";
+        snap.forEach(doc => {
+          const d = doc.data();
+          const hasLiked = (d.likedBy || []).includes(uid);
+          const isOwner = d.owner === uid;
+
+          const li = document.createElement("li");
+          li.style = "background:#1e1e1e;color:white;margin-bottom:10px;padding:10px;border-radius:8px;";
+
+          let commentHTML = `<p id='comment-text-${doc.id}'>${d.comment}</p>`;
+          if (d.spoiler) {
+            commentHTML = `<div class='spoiler-warning' onclick='this.nextElementSibling.style.display="block";this.remove();'>هذا التعليق يحتوي على حرق أحداث، انقر هنا لعرض التعليق </div>
+            <p style='display:none;color:red;font-weight:bold;'>${d.comment}</p>`;
+          }
+
+          li.innerHTML = `
+            <strong class="anon-comment-user">مستخدم مجهول</strong><br>
+            <small style="color:#ccc;">من دولة ${d.country}</small>
+            ${commentHTML}
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="color:gray;">${anonComment_timeAgo(d.timestamp)}</span>
+              <div style="display:flex;align-items:center;">
+                <button onclick="anonComment_like('${doc.id}')"
+                        class="anon-icon-btn" style="color:${hasLiked ? 'red' : 'white'};">&#10084; ${anonComment_formatLikes(d.likes || 0)}</button>
+                ${isOwner ? `
+                  <button onclick="anonComment_edit('${doc.id}', \`${d.comment.replace(/`/g, "\\`")}\`)" class="anon-icon-btn">تعديل</button>
+                  <button onclick="anonComment_delete('${doc.id}')" class="anon-icon-btn">حذف</button>
+                ` : ""}
+              </div>
+            </div>
+            <div class="comment-separator"></div>
+          `;
+          ul.appendChild(li);
+        });
+      });
+  }
+
+  // تحميل التعليقات عند تحميل الصفحة
+  window.onload = function() {
+    anonComment_render();
+
+    // إخفاء قائمة الدول إذا كانت موجودة في التخزين المحلي
+    const storedCountry = localStorage.getItem("anon_comment_country");
+    if (storedCountry) {
+      document.getElementById("anonComment_country_container").style.display = "none";
+    }
+  };
 </script>
         
         
